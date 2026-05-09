@@ -922,7 +922,24 @@
     loadDayData();
     initGrid();
   }
-
+function sendToCoach() {
+    saveCurrentToData();
+    const client = document.getElementById('clientSelect').value;
+    const data = dayData[currentDay] || {};
+    const checks = data.checks || [];
+    const checkLabels = {
+      pdj: '🌅 Petit déjeuner', midi: '☀️ Repas midi', soir: '🌙 Repas soir',
+      collation: '🍎 Collation', eau: '🚰 3L eau', tisane: '🍵 Thé/Aloès',
+      sommeil: '😴 Sommeil 7-8h', sport: '⚡ Sport', programme: '📋 Programme',
+      steps: '🚶 10 000 pas', partage: '📱 Partage coach'
+    };
+    const done = checks.map(c => '✅ ' + (checkLabels[c] || c)).join('%0A');
+    const notDone = Object.keys(checkLabels).filter(k => !checks.includes(k)).map(k => '❌ ' + checkLabels[k]).join('%0A');
+    const e = data.scores || {};
+    const weight = data.weight ? `⚖️ Poids : ${data.weight} kg` : '';
+    const frein = data.frein ? `💬 Frein : ${data.frein}` : '';
+    const msg = `🏆 *BILAN J${currentDay}/21 — ${client.toUpperCase()}*%0A%0A✅ *Fait aujourd'hui :*%0A${done}%0A%0A❌ *Pas encore :*%0A${notDone}%0A%0A⚡ Énergie : ${e.energy||0}/5%0A😊 Humeur : ${e.mood||0}/5%0A💪 Motivation : ${e.motiv||0}/5%0A😣 Douleurs : ${e.pain||0}/5%0A%0A${weight}%0A${frein}`;
+    window.open('https://wa.me/33758327084?text=' + msg, '_blank');
   // INIT
   initGrid();
   loadDayData();
