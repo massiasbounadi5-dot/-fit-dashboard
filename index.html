@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIT COACH — Suivi 21 Jours</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --deep: #111318;
+    --card: #181c24;
+    --border: rgba(255,255,255,0.07);
+    --gold: #f5c842;
+    --gold2: #e8a82c;
+    --green: #3ddc84;
+    --red: #ff4d6d;
+    --blue: #4dabf7;
+    --purple: #b57bee;
+    --muted: #5a6072;
+    --text: #e8eaf0;
+    --sub: #8a93a8;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 60% 40% at 80% 10%, rgba(245,200,66,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 10% 80%, rgba(61,220,132,0.04) 0%, transparent 60%);
+  }
+
+  /* HEADER */
+  .header {
+    padding: 28px 32px 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .header-left {}
+  .logo {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 38px;
+    line-height: 1;
+    letter-spacing: 2px;
+    color: var(--text);
+  }
+  .title span { color: var(--gold); }
+
+  .client-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .client-selector label {
+    font-size: 12px;
+    color: var(--sub);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .client-select {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6072' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 32px;
+    min-width: 150px;
+  }
+  .client-select:focus { border-color: var(--gold); }
+
+  /* STATS STRIP */
+  .stats-strip {
+    display: flex;
+    gap: 12px;
+    padding: 20px 32px 0;
+    flex-wrap: wrap;
+  }
+  .stat-pill {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 140px;
+  }
+  .stat-icon { font-size: 20px; }
+  .stat-val {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 22px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .stat-label { font-size: 11px; color: var(--sub); letter-spacing: 0.5px; margin-top: 1px; }
+
+  /* MAIN GRID */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 16px;
+    padding: 16px 32px 32px;
+  }
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr; }
+    .header { padding: 20px 16px 0; }
+    .stats-strip { padding: 16px 16px 0; }
+    .main { padding: 16px 16px 24px; }
+  }
+
+  /* DAY GRID */
+  .section-label {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: var(--sub);
+    margin-bottom: 12px;
+  }
+
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .day-cell {
+    aspect-ratio: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .day-cell:hover { border-color: var(--gold); transform: translateY(-1px); }
+  .day-cell.active {
+    border-color: var(--gold);
+    background: rgba(245,200,66,0.08);
+  }
+  .day-cell.active::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(245,200,66,0.1), transparent);
+  }
+  .day-cell.completed {
+    border-color: rgba(61,220,132,0.3);
+    background: rgba(61,220,132,0.05);
+  }
+  .day-cell.future { opacity: 0.35; pointer-events: none; }
+  .day-num {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 18px;
+    color: var(--text);
+    line-height: 1;
+  }
+  .day-cell.active .day-num { color: var(--gold); }
+  .day-score {
+    font-size: 9px;
+    color: var(--sub);
+    margin-top: 2px;
+  }
+  .day-cell.completed .day-score { color: var(--green); }
+  .day-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    margin-top: 3px;
+    background: var(--muted);
+  }
+  .day-cell.completed .day-dot { background: var(--green); }
+  .day-cell.active .day-dot { background: var(--gold); }
+
+  /* CHECKLIST CARD */
+  .checklist-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .checklist-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .checklist-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 20px;
+    letter-spacing: 1px;
+  }
+  .day-badge {
+    background: var(--gold);
+    color: var(--black);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    letter-spacing: 2px;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  .progress-bar-wrap {
+    background: rgba(255,255,255,0.06);
+    border-radius: 4px;
+    height: 5px;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold2), var(--gold));
+    border-radius: 4px;
+    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .check-group-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 14px 0 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+    margin-bottom: 3px;
+  }
+  .check-item:hover { background: rgba(255,255,255,0.04); }
+  .check-item.checked { opacity: 0.7; }
+
+  .check-box {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    border: 2px solid var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    font-size: 12px;
+  }
+  .check-item.checked .check-box {
+    background: var(--green);
+    border-color: var(--green);
+    color: var(--black);
+    font-weight: 700;
+  }
+  .check-item:nth-child(1) .check-box { border-color: #f5a623; }
+  .check-item.checked:nth-child(1) .check-box { background: #f5a623; border-color: #f5a623; }
+
+  .check-icon { font-size: 16px; width: 20px; text-align: center; }
+  .check-label { font-size: 14px; font-weight: 500; flex: 1; }
+  .check-item.checked .check-label { text-decoration: line-through; color: var(--sub); }
+  .check-sub { font-size: 11px; color: var(--muted); }
+
+  /* SCORE DIALS */
+  .scores-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .score-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+  }
+  .score-card-icon { font-size: 20px; margin-bottom: 4px; }
+  .score-card-label { font-size: 10px; color: var(--sub); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .stars { display: flex; justify-content: center; gap: 3px; }
+  .star {
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.15s;
+    filter: grayscale(1) opacity(0.3);
+  }
+  .star.lit { filter: none; }
+  .star:hover { transform: scale(1.2); }
+  .score-num {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 22px;
+    color: var(--gold);
+    margin-top: 4px;
+  }
+
+  /* SIDEBAR */
+  .sidebar { display: flex; flex-direction: column; gap: 14px; }
+
+  .sidebar-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+  }
+  .sidebar-card-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 16px;
+    letter-spacing: 2px;
+    color: var(--sub);
+    margin-bottom: 12px;
+  }
+
+  /* Frein */
+  .frein-textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 10px 12px;
+    resize: none;
+    outline: none;
+    min-height: 70px;
+    transition: border-color 0.2s;
+  }
+  .frein-textarea:focus { border-color: var(--gold); }
+  .frein-textarea::placeholder { color: var(--muted); }
+
+  /* Notes */
+  .note-input {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 10px 12px;
+    resize: none;
+    outline: none;
+    min-height: 55px;
+    transition: border-color 0.2s;
+  }
+  .note-input:focus { border-color: var(--purple); }
+  .note-input::placeholder { color: var(--muted); }
+
+  /* Call pref */
+  .call-row { display: flex; flex-direction: column; gap: 6px; }
+  .call-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  .call-option:hover { border-color: var(--gold); }
+  .call-option.selected {
+    border-color: var(--gold);
+    background: rgba(245,200,66,0.08);
+    color: var(--gold);
+  }
+  .call-option input { display: none; }
+
+  /* Weight tracker */
+  .weight-row { display: flex; align-items: center; gap: 8px; }
+  .weight-input {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 28px;
+    text-align: center;
+    padding: 8px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s;
+  }
+  .weight-input:focus { border-color: var(--blue); }
+  .weight-unit {
+    font-size: 13px;
+    color: var(--sub);
+  }
+  .weight-trend { font-size: 20px; margin-top: 4px; text-align: center; }
+
+  /* Photo btn */
+  .photo-btn {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px dashed rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: var(--sub);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+  .photo-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(245,200,66,0.04); }
+
+  /* Save btn */
+  .save-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold2), var(--gold));
+    border: none;
+    border-radius: 10px;
+    color: var(--black);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 18px;
+    letter-spacing: 3px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(245,200,66,0.2);
+  }
+  .save-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(245,200,66,0.35); }
+  .save-btn:active { transform: translateY(0); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--green);
+    color: var(--black);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 16px;
+    letter-spacing: 2px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1000;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* SCORE SUMMARY CHART */
+  .mini-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 40px;
+    margin-top: 10px;
+  }
+  .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .mini-bar {
+    width: 100%;
+    border-radius: 2px 2px 0 0;
+    min-height: 3px;
+    transition: height 0.5s;
+  }
+  .bar-label { font-size: 8px; color: var(--muted); }
+
+  .completed-banner {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    background: rgba(61,220,132,0.1);
+    border: 1px solid rgba(61,220,132,0.3);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--green);
+    margin-top: 12px;
+  }
+  .completed-banner.show { display: flex; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">🏆 FIT COACH PRO</div>
+    <div class="title">SUIVI <span>21 JOURS</span></div>
+  </div>
+  <div class="client-selector">
+    <label>Client</label>
+    <select class="client-select" id="clientSelect" onchange="loadClient()">
+      <option value="massias">Massias</option>
+      <option value="sarah">Sarah</option>
+      <option value="kevin">Kevin</option>
+      <option value="nouveau">+ Nouveau client</option>
+    </select>
+  </div>
+</div>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stat-pill">
+    <div class="stat-icon">📅</div>
+    <div>
+      <div class="stat-val" id="statDay">J1</div>
+      <div class="stat-label">Jour actuel</div>
+    </div>
+  </div>
+  <div class="stat-pill">
+    <div class="stat-icon">✅</div>
+    <div>
+      <div class="stat-val" id="statDone">4/9</div>
+      <div class="stat-label">Tâches du jour</div>
+    </div>
+  </div>
+  <div class="stat-pill">
+    <div class="stat-icon">🔥</div>
+    <div>
+      <div class="stat-val" id="statStreak">1</div>
+      <div class="stat-label">Jours complétés</div>
+    </div>
+  </div>
+  <div class="stat-pill">
+    <div class="stat-icon">⚡</div>
+    <div>
+      <div class="stat-val" id="statAvgEnergy">5/5</div>
+      <div class="stat-label">Énergie moy.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- LEFT COL -->
+  <div>
+    <!-- Day Grid -->
+    <div class="section-label">— PROGRESSION 21 JOURS</div>
+    <div class="days-grid" id="daysGrid"></div>
+
+    <!-- Mini progress chart -->
+    <div class="mini-chart" id="miniChart"></div>
+
+    <!-- Checklist -->
+    <div class="checklist-card" style="margin-top:16px;">
+      <div class="checklist-header">
+        <div class="checklist-title">BILAN DU JOUR</div>
+        <div class="day-badge" id="dayBadge">J1 / 21</div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+      </div>
+
+      <div class="check-group-label">🍽 Nutrition</div>
+      <div class="check-item" onclick="toggle(this)" data-id="pdj">
+        <div class="check-box"></div>
+        <div class="check-icon">🌅</div>
+        <div><div class="check-label">Petit déjeuner</div><div class="check-sub">Repas équilibré le matin</div></div>
+      </div>
+      <div class="check-item" onclick="toggle(this)" data-id="midi">
+        <div class="check-box"></div>
+        <div class="check-icon">☀️</div>
+        <div><div class="check-label">Repas midi</div><div class="check-sub">Repas complet & protéiné</div></div>
+      </div>
+      <div class="check-item" onclick="toggle(this)" data-id="soir">
+        <div class="check-box"></div>
+        <div class="check-icon">🌙</div>
+        <div><div class="check-label">Repas soir</div><div class="check-sub">Repas léger & équilibré</div></div>
+      </div>
+      <div class="check-item" onclick="toggle(this)" data-id="collation">
+        <div class="check-box"></div>
+        <div class="check-icon">🍎</div>
+        <div><div class="check-label">Collation</div><div class="check-sub">Snack sain dans la journée</div></div>
+      </div>
+
+      <div class="check-group-label">💧 Hydratation & Bien-être</div>
+      <div class="check-item" onclick="toggle(this)" data-id="eau">
+        <div class="check-box"></div>
+        <div class="check-icon">🚰</div>
+        <div><div class="check-label">3L d'eau</div><div class="check-sub">Objectif hydratation journalier</div></div>
+      </div>
+      <div class="check-item" onclick="toggle(this)" data-id="tisane">
+        <div class="check-box"></div>
+        <div class="check-icon">🍵</div>
+        <div><div class="check-label">Thé / Aloès</div><div class="check-sub">Drainage / récupération</div></div>
+      </div>
+      <div class="check-item" onclick="toggle(this)" data-id="sommeil">
+        <div class="check-box"></div>
+        <div class="check-icon">😴</div>
+        <div><div class="check-label">Sommeil 7–8h</div><div class="check-sub">Respect du temps de récupération</div></div>
+      </div>
+
+      <div class="check-group-label">🏋️ Activité & Programme</div>
+      <div class="check-item" onclick="toggle(this)" data-id="sport">
+        <div class="check-box"></div>
+        <div class="check-icon">⚡</div>
+        <div><div class="check-label">Sport / Séance</div><div class="check-sub">Entraînement du programme</div></div>
+      </div>
+      <div class="check-item" onclick="toggle(this)" data-id="programme">
+        <div class="check-box"></div>
+        <div class="check-icon">📋</div>
+        <div><div class="check-label">Programme lu</div><div class="check-sub">Consignes du jour suivies</div></div>
+      </div>
+      <div class="check-item" onclick="toggle(this)" data-id="steps">
+        <div class="check-box"></div>
+        <div class="check-icon">🚶</div>
+        <div><div class="check-label">10 000 pas</div><div class="check-sub">Activité quotidienne minimale</div></div>
+      </div>
+      <div class="check-item" onclick="toggle(this)" data-id="partage">
+        <div class="check-box"></div>
+        <div class="check-icon">📱</div>
+        <div><div class="check-label">Partage coach</div><div class="check-sub">Check-in envoyé</div></div>
+      </div>
+
+      <!-- Scores -->
+      <div class="scores-row">
+        <div class="score-card">
+          <div class="score-card-icon">⚡</div>
+          <div class="score-card-label">Énergie</div>
+          <div class="stars" id="starsEnergy">
+            <span class="star lit" onclick="setScore('energy',1)">★</span>
+            <span class="star lit" onclick="setScore('energy',2)">★</span>
+            <span class="star lit" onclick="setScore('energy',3)">★</span>
+            <span class="star lit" onclick="setScore('energy',4)">★</span>
+            <span class="star lit" onclick="setScore('energy',5)">★</span>
+          </div>
+          <div class="score-num" id="scoreEnergy">5/5</div>
+        </div>
+        <div class="score-card">
+          <div class="score-card-icon">😊</div>
+          <div class="score-card-label">Humeur</div>
+          <div class="stars" id="starsMood">
+            <span class="star lit" onclick="setScore('mood',1)">★</span>
+            <span class="star lit" onclick="setScore('mood',2)">★</span>
+            <span class="star lit" onclick="setScore('mood',3)">★</span>
+            <span class="star lit" onclick="setScore('mood',4)">★</span>
+            <span class="star lit" onclick="setScore('mood',5)">★</span>
+          </div>
+          <div class="score-num" id="scoreMood">5/5</div>
+        </div>
+        <div class="score-card">
+          <div class="score-card-icon">💪</div>
+          <div class="score-card-label">Motivation</div>
+          <div class="stars" id="starsMotiv">
+            <span class="star lit" onclick="setScore('motiv',1)">★</span>
+            <span class="star lit" onclick="setScore('motiv',2)">★</span>
+            <span class="star lit" onclick="setScore('motiv',3)">★</span>
+            <span class="star lit" onclick="setScore('motiv',4)">★</span>
+            <span class="star lit" onclick="setScore('motiv',5)">★</span>
+          </div>
+          <div class="score-num" id="scoreMotiv">5/5</div>
+        </div>
+        <div class="score-card">
+          <div class="score-card-icon">😣</div>
+          <div class="score-card-label">Douleurs / Courbatures</div>
+          <div class="stars" id="starsPain">
+            <span class="star" onclick="setScore('pain',1)">★</span>
+            <span class="star" onclick="setScore('pain',2)">★</span>
+            <span class="star" onclick="setScore('pain',3)">★</span>
+            <span class="star" onclick="setScore('pain',4)">★</span>
+            <span class="star" onclick="setScore('pain',5)">★</span>
+          </div>
+          <div class="score-num" id="scorePain">0/5</div>
+        </div>
+      </div>
+
+      <div class="completed-banner" id="completedBanner">
+        🎯 Journée complète ! Incroyable, continue comme ça !
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- Poids -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">⚖️ POIDS DU JOUR</div>
+      <div class="weight-row">
+        <input type="number" class="weight-input" id="weightInput" placeholder="—" step="0.1" min="30" max="200" oninput="updateWeight()">
+        <div class="weight-unit">kg</div>
+      </div>
+      <div class="weight-trend" id="weightTrend"></div>
+      <button class="photo-btn">📸 Ajouter photo suivi</button>
+    </div>
+
+    <!-- Frein de la semaine -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">💬 FREIN DE LA SEMAINE</div>
+      <textarea class="frein-textarea" id="freinInput" placeholder="Ex : Manque de temps, stress, envies sucrées..."></textarea>
+    </div>
+
+    <!-- Appel préféré -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">📞 APPEL PRÉFÉRÉ</div>
+      <div class="call-row" id="callRow">
+        <label class="call-option" onclick="selectCall(this,'matin')">
+          <input type="radio" name="call"> 🌅 Matin (8h–10h)
+        </label>
+        <label class="call-option" onclick="selectCall(this,'midi')">
+          <input type="radio" name="call"> ☀️ Midi (12h–14h)
+        </label>
+        <label class="call-option" onclick="selectCall(this,'soir')">
+          <input type="radio" name="call"> 🌙 Soir (18h–20h)
+        </label>
+        <label class="call-option selected" onclick="selectCall(this,'nc')">
+          <input type="radio" name="call" checked> — Non choisi
+        </label>
+      </div>
+    </div>
+
+    <!-- Notes coach -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">📝 NOTES COACH</div>
+      <textarea class="note-input" id="notesInput" placeholder="Observations, ajustements programme..."></textarea>
+    </div>
+
+    <!-- Save -->
+    <button class="save-btn" onclick="saveDay()">💾 ENREGISTRER LA JOURNÉE</button>
+
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ Journée enregistrée !</div>
+
+<script>
+  // STATE
+  let currentDay = 1;
+  let scores = { energy: 5, mood: 5, motiv: 5, pain: 0 };
+  let dayData = {}; // { day: { checks: [], scores, weight, frein, notes } }
+
+  // Seed day 1 with some checks
+  dayData[1] = {
+    checks: ['pdj','midi','soir','collation'],
+    scores: { energy: 5, mood: 5, motiv: 5, pain: 0 },
+    weight: null, frein: '', notes: ''
+  };
+
+  function initGrid() {
+    const grid = document.getElementById('daysGrid');
+    grid.innerHTML = '';
+    const chart = document.getElementById('miniChart');
+    chart.innerHTML = '';
+
+    for (let d = 1; d <= 21; d++) {
+      const cell = document.createElement('div');
+      cell.className = 'day-cell' +
+        (d === currentDay ? ' active' : '') +
+        (d < currentDay ? ' completed' : '') +
+        (d > currentDay ? ' future' : '');
+      const data = dayData[d];
+      const score = data ? data.checks.length : 0;
+      cell.innerHTML = `<div class="day-num">J${d}</div><div class="day-score">${d <= currentDay ? score+'/11' : ''}</div><div class="day-dot"></div>`;
+      cell.onclick = () => switchDay(d);
+      grid.appendChild(cell);
+
+      // Mini bar
+      const bw = document.createElement('div');
+      bw.className = 'bar-wrap';
+      const pct = data ? Math.round((data.checks.length / 11) * 100) : 0;
+      const col = pct >= 80 ? '#3ddc84' : pct >= 50 ? '#f5c842' : d > currentDay ? 'transparent' : '#ff4d6d';
+      bw.innerHTML = `<div class="mini-bar" style="height:${Math.max(pct*0.4,0)}px;background:${col};"></div><div class="bar-label">${d <= currentDay ? 'J'+d : ''}</div>`;
+      chart.appendChild(bw);
+    }
+    updateStats();
+  }
+
+  function switchDay(d) {
+    if (d > currentDay) return;
+    // Save current state before switching
+    saveCurrentToData();
+    currentDay = d;
+    loadDayData();
+    initGrid();
+  }
+
+  function saveCurrentToData() {
+    const checks = [...document.querySelectorAll('.check-item.checked')].map(el => el.dataset.id);
+    if (!dayData[currentDay]) dayData[currentDay] = {};
+    dayData[currentDay].checks = checks;
+    dayData[currentDay].scores = { ...scores };
+    dayData[currentDay].weight = document.getElementById('weightInput').value || null;
+    dayData[currentDay].frein = document.getElementById('freinInput').value;
+    dayData[currentDay].notes = document.getElementById('notesInput').value;
+  }
+
+  function loadDayData() {
+    const data = dayData[currentDay] || { checks: [], scores: { energy: 5, mood: 5, motiv: 5, pain: 0 } };
+    // Checks
+    document.querySelectorAll('.check-item').forEach(el => {
+      el.classList.toggle('checked', data.checks.includes(el.dataset.id));
+      el.querySelector('.check-box').textContent = data.checks.includes(el.dataset.id) ? '✓' : '';
+    });
+    // Scores
+    scores = { ...data.scores };
+    renderStars('energy', scores.energy);
+    renderStars('mood', scores.mood);
+    renderStars('motiv', scores.motiv);
+    renderStars('pain', scores.pain);
+    // Weight
+    document.getElementById('weightInput').value = data.weight || '';
+    // Frein
+    document.getElementById('freinInput').value = data.frein || '';
+    // Notes
+    document.getElementById('notesInput').value = data.notes || '';
+    document.getElementById('dayBadge').textContent = `J${currentDay} / 21`;
+    updateProgress();
+    updateStats();
+  }
+
+  function toggle(el) {
+    el.classList.toggle('checked');
+    const box = el.querySelector('.check-box');
+    box.textContent = el.classList.contains('checked') ? '✓' : '';
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const total = document.querySelectorAll('.check-item').length;
+    const done = document.querySelectorAll('.check-item.checked').length;
+    const pct = Math.round((done / total) * 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('statDone').textContent = `${done}/${total}`;
+    document.getElementById('completedBanner').classList.toggle('show', done === total);
+  }
+
+  function setScore(type, val) {
+    scores[type] = val;
+    renderStars(type, val);
+    document.getElementById('score' + type.charAt(0).toUpperCase() + type.slice(1)).textContent = val + '/5';
+    if (type === 'energy') document.getElementById('statAvgEnergy').textContent = val + '/5';
+  }
+
+  function renderStars(type, val) {
+    const map = { energy: 'starsEnergy', mood: 'starsMood', motiv: 'starsMotiv', pain: 'starsPain' };
+    const scoreMap = { energy: 'scoreEnergy', mood: 'scoreMood', motiv: 'scoreMotiv', pain: 'scorePain' };
+    const container = document.getElementById(map[type]);
+    container.querySelectorAll('.star').forEach((s, i) => {
+      s.classList.toggle('lit', i < val);
+    });
+    document.getElementById(scoreMap[type]).textContent = val + '/5';
+  }
+
+  function updateStats() {
+    document.getElementById('statDay').textContent = `J${currentDay}`;
+    const completed = Object.values(dayData).filter(d => d && d.checks && d.checks.length >= 8).length;
+    document.getElementById('statStreak').textContent = completed;
+  }
+
+  function updateWeight() {
+    const val = parseFloat(document.getElementById('weightInput').value);
+    const trend = document.getElementById('weightTrend');
+    // Compare to first weigh-in
+    const firstDay = Object.values(dayData).find(d => d && d.weight);
+    if (firstDay && firstDay.weight && val) {
+      const diff = val - parseFloat(firstDay.weight);
+      if (diff < -0.5) trend.textContent = `📉 ${diff.toFixed(1)} kg depuis J1`;
+      else if (diff > 0.5) trend.textContent = `📈 +${diff.toFixed(1)} kg depuis J1`;
+      else trend.textContent = `↔️ Poids stable`;
+    }
+  }
+
+  function selectCall(el, val) {
+    document.querySelectorAll('.call-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function saveDay() {
+    saveCurrentToData();
+    initGrid();
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  function loadClient() {
+    const val = document.getElementById('clientSelect').value;
+    if (val === 'nouveau') {
+      const name = prompt('Nom du client :');
+      if (name) {
+        const opt = document.createElement('option');
+        opt.value = name.toLowerCase();
+        opt.textContent = name;
+        const sel = document.getElementById('clientSelect');
+        sel.insertBefore(opt, sel.lastElementChild);
+        sel.value = opt.value;
+      }
+    }
+    // Reset for new client
+    dayData = {};
+    currentDay = 1;
+    scores = { energy: 5, mood: 5, motiv: 5, pain: 0 };
+    loadDayData();
+    initGrid();
+  }
+
+  // INIT
+  initGrid();
+  loadDayData();
+</script>
+</body>
+</html>
